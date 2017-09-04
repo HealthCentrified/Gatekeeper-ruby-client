@@ -6,4 +6,30 @@ services:
     volumes:
       - /development/Gatekeeper-ruby-client:/gatekeeper-client
     environment:
-      GATEKEEPER_HOST: http://localhost
+      GATEKEEPER_HOST: http://web
+    depends_on:
+      - web
+  web:
+    image: 'healthcentrified/gatekeeper'
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    environment:
+      PG_HOST: db
+      PG_PORT: 5432
+      PG_USERNAME: postgres
+      PG_DATABASE: gatekeeper
+      LDAP_DOMAIN: healthcentrified.com
+      LDAP_CONN_HOST: openldap
+      LDAP_USERNAME: 'admin'
+      LDAP_PASSWORD: 'admin'
+      DEBUG: 'true'
+  db:
+    image: postgres
+  seed_db:
+    image: postgres
+    volumes:
+      - /development/Gatekeeper-php/schema:/usr/share/schema
+    command: /bin/bash -c "cd /usr/share/schema; ./drop.sh; ./migrate.sh && ./migrate_test.sh"
+  
