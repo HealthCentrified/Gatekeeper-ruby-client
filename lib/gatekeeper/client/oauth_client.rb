@@ -2,7 +2,10 @@ module Gatekeeper
   module Client
     class OAuthClient < Base
       class << self
-        def find(client_id: , client_secret: nil, username: nil, password: nil)
+        def find(client_id: ENV['GATEKEEPER_CLIENT_ID'],
+                 client_secret: ENV['GATEKEEPER_CLIENT_SECRET'],
+                 username: nil,
+                 password: nil)
           payload = {client_id: client_id}
           if client_secret
             payload[:client_secret] = client_secret
