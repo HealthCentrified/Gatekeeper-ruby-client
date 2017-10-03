@@ -11,7 +11,7 @@ module Gatekeeper
                  username: nil,
                  password: nil)
           access_token = nil
-          cached_client = find_from_cache(client_id)
+          cached_client = get_cache(key: client_id)
           if cached_client
             cached_client
           else
@@ -31,17 +31,19 @@ module Gatekeeper
         end
 
         # These are decent utility methods, move to Base?
-        def get_cache(key: nil, fallback: nil)
+        def get_cache(key: nil, **additional_args)
+          fallback = additional_args[:fallback]
           value = @cache.get(key) if @cache
           value || fallback
         end
 
         def set_cache(key: nil, value: nil, expiry: nil)
           if expiry
-            @cache.setex(key, expiry.to_i, value)
+            @cache.setex(key, expiry.to_i, value) if @cache
           else
-            @cache.set(key, value)
+            @cache.set(key, value) if @cache
           end
+          value
         end
 
         def generate_payload(client_id, client_secret, username, password)
