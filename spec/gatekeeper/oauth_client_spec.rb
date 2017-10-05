@@ -10,5 +10,9 @@ RSpec.describe Gatekeeper::Client::OAuthClient do
     it "should set the access token on a private client when credentials are passed" do
       expect(@private_client.access_token).to_not be(nil)
     end
+
+    it "should have its scope set" do
+      expect(@private_client.scopes).to include('client-credentials-scope')
+    end
   end
 end

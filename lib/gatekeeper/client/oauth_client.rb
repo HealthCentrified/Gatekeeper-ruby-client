@@ -61,10 +61,28 @@ module Gatekeeper
       end
 
       attr_reader :access_token
+      attr_reader :scopes # scopes?
 
       def initialize(client_id, access_token)
         @client_id = client_id
         @access_token = access_token
+        @scopes = retrieve_scopes
+      end
+
+      def retrieve_scopes
+        response = Gatekeeper::Client::Base.connection.get do |request|
+          request.url '/tokens/validate'
+          request.params['access_token'] = access_token
+        end
+        JSON.parse(response.body)['scope'].split(' ') if response.success?
+      end
+
+      def has_scope?(scope)
+        scopes.include?(scope)
+      end
+
+      def has_all_scopes(validating_scopes)
+        (scopes & validating_scopes).sort == validating_scopes.sort
       end
     end
   end
