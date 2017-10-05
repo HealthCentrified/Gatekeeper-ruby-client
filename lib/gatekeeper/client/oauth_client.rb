@@ -81,8 +81,12 @@ module Gatekeeper
         scopes.include?(scope)
       end
 
-      def has_all_scopes(validating_scopes)
+      def has_all_scopes?(validating_scopes)
         (scopes & validating_scopes).sort == validating_scopes.sort
+      end
+
+      def has_any_scope?(validating_scopes)
+        (scopes & validating_scopes).size > 0
       end
     end
   end
