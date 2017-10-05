@@ -11,7 +11,7 @@ module Gatekeeper
                  username: nil,
                  password: nil)
           access_token = nil
-          cached_client = get_cache(key: client_id)
+          cached_client = get_cache(key: client_id, prefix: 'client')
           if cached_client
             cached_client
           else
@@ -23,21 +23,23 @@ module Gatekeeper
             end
             body = JSON.parse(response.body)
             access_token = body['access_token']
-            set_cache(key: client_id, value: access_token, expiry: body['expiry'])
+            set_cache(key: client_id, value: access_token, expiry: body['expiry'], prefix: 'client')
           end
           # test the cache retrieval works
-          access_token = get_cache(key: client_id, fallback: access_token)
+          access_token = get_cache(key: client_id, fallback: access_token, prefix: 'client')
           new(client_id, access_token)
         end
 
         # These are decent utility methods, move to Base?
-        def get_cache(key: nil, **additional_args)
+        def get_cache(key: nil, prefix: nil, **additional_args)
           fallback = additional_args[:fallback]
+          key = "#{prefix}::#{key}" if prefix
           value = @cache.get(key) if @cache
           value || fallback
         end
 
-        def set_cache(key: nil, value: nil, expiry: nil)
+        def set_cache(key: nil, value: nil, expiry: nil, prefix: nil)
+          key = "#{prefix}::#{key}" if prefix
           if expiry
             @cache.setex(key, expiry.to_i, value) if @cache
           else
@@ -63,7 +65,7 @@ module Gatekeeper
       attr_reader :access_token
       attr_reader :scopes # scopes?
 
-      def initialize(client_id, access_token)
+      def initialize(client_id=nil, access_token)
         @client_id = client_id
         @access_token = access_token
         @scopes = retrieve_scopes
