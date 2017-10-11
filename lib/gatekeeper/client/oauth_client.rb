@@ -27,7 +27,7 @@ module Gatekeeper
           end
           # test the cache retrieval works
           access_token = get_cache(key: client_id, fallback: access_token, prefix: 'client')
-          new(client_id, access_token)
+          new(client_id: client_id, access_token: access_token)
         end
 
         # These are decent utility methods, move to Base?
@@ -65,7 +65,7 @@ module Gatekeeper
       attr_reader :access_token
       attr_reader :scopes # scopes?
 
-      def initialize(client_id=nil, access_token)
+      def initialize(client_id: nil, access_token:)
         @client_id = client_id
         @access_token = access_token
         @scopes = retrieve_scopes
@@ -76,7 +76,10 @@ module Gatekeeper
           request.url '/tokens/validate'
           request.params['access_token'] = access_token
         end
-        JSON.parse(response.body)['scope'].split(' ') if response.success?
+        if response.success?
+          potential_scopes = JSON.parse(response.body)['scope']
+          potential_scopes.split(' ') if potential_scopes
+        end
       end
 
       def has_scope?(scope)

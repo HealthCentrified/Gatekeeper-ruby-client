@@ -4,7 +4,7 @@ RSpec.describe Gatekeeper::Client::User do
   context "with a public OAuth client already existing" do
     before do
       @public_client = Gatekeeper::Client::OAuthClient.find(client_id: 'PublicClient',
-                                                            username: 'testuser',
+                                                            username: 'testuser-hammock1',
                                                             password: 'password')
     end
 
