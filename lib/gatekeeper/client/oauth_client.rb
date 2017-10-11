@@ -79,6 +79,8 @@ module Gatekeeper
         if response.success?
           potential_scopes = JSON.parse(response.body)['scope']
           potential_scopes.split(' ') if potential_scopes
+        else
+          []
         end
       end
 
