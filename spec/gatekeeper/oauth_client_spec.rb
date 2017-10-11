@@ -14,5 +14,10 @@ RSpec.describe Gatekeeper::Client::OAuthClient do
     it "should have its scope set" do
       expect(@private_client.scopes).to include('client-credentials-scope')
     end
+
+    it "should respond true to has_any_scope when it doesn't have a scope" do
+      expect(@private_client.has_any_scope?(['client-credentials-scope', 'su'])).to be true
+    end
+    
   end
 end
