@@ -97,12 +97,11 @@ module Gatekeeper
       private
 
       def validation_response
-        @response = Gatekeeper::Client::Base.connection.get do |request|
+        Gatekeeper::Client::Base.connection.get do |request|
           request.url '/tokens/validate'
           request.params['access_token'] = access_token
         end
       end
-
     end
   end
 end
