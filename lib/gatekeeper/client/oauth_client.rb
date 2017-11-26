@@ -91,7 +91,7 @@ module Gatekeeper
       end
 
       def has_any_scope?(validating_scopes)
-        (scopes & validating_scopes).size > 0
+        ((scopes & validating_scopes).try(:size) || 0)  > 0
       end
 
       private
