@@ -69,13 +69,11 @@ module Gatekeeper
         @client_id = client_id
         @access_token = access_token
         @scopes = retrieve_scopes
+        @user_id = JSON.parse(validation_response.body)['user_id']
       end
 
       def retrieve_scopes
-        response = Gatekeeper::Client::Base.connection.get do |request|
-          request.url '/tokens/validate'
-          request.params['access_token'] = access_token
-        end
+        response = validation_response
         if response.success?
           potential_scopes = JSON.parse(response.body)['scope']
           potential_scopes.split(' ') if potential_scopes
@@ -95,6 +93,16 @@ module Gatekeeper
       def has_any_scope?(validating_scopes)
         (scopes & validating_scopes).size > 0
       end
+
+      private
+
+      def validation_response
+        @response = Gatekeeper::Client::Base.connection.get do |request|
+          request.url '/tokens/validate'
+          request.params['access_token'] = access_token
+        end
+      end
+
     end
   end
 end
