@@ -64,6 +64,7 @@ module Gatekeeper
 
       attr_reader :access_token
       attr_reader :scopes # scopes?
+      attr_reader :user_id
 
       def initialize(client_id: nil, access_token:)
         @client_id = client_id
