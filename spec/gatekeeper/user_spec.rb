@@ -10,8 +10,31 @@ RSpec.describe Gatekeeper::Client::User do
 
     context "with an existing user with known credentials on an non-LDAP server" do
       it "should authenticate" do
-        puts @public_client.inspect
         expect(@public_client.access_token).to_not be_nil
+      end
+    end
+
+    context "when trying to get a list of users" do
+      it "should give you a list of all users" do
+        expect(@public_client.users).not_to be_empty
+      end
+    end
+
+    context "when trying to get a list of users with a type of client" do
+      it "should give you a list of users that are just clients" do
+        clients = @public_client.users.clients
+        expect(clients).not_to be_empty
+        clients.each do |client|
+          expect(client.has_scope?('client')).to be_truthy
+        end
+      end
+    end
+
+    context "when trying to find all users with permissions of client:testuser-hammock1" do
+      it "should give you all users that have the right permissions" do
+        clients = @public_client.users.have_access?('client:testuser-hammock1')
+        expect(clients).not_to be_empty
+        expect(clients.size).to equal(1)
       end
     end
   end
@@ -28,19 +51,6 @@ RSpec.describe Gatekeeper::Client::User do
       end
     end
 
-=begin
-    context "with an LDAP backed user" do
-      before do
-      end
-      it "can authenticate when given the right username and password" do
-        pending
-      end
-      it "fails authentication when the username and password do not match" do
-        pending
-      end
-    end
-
-=end
   end
 
 end

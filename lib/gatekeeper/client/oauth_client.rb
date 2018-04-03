@@ -65,6 +65,7 @@ module Gatekeeper
       attr_reader :access_token
       attr_reader :scopes # scopes?
       attr_reader :user_id
+      attr_reader :user_client
 
       def initialize(client_id: nil, access_token:)
         @client_id = client_id
@@ -84,7 +85,8 @@ module Gatekeeper
       end
 
       def has_scope?(scope)
-        scopes.include?(scope)
+        arr = scopes.split(' ')
+        arr.include?(scope)
       end
 
       def has_all_scopes?(validating_scopes)
@@ -92,7 +94,11 @@ module Gatekeeper
       end
 
       def has_any_scope?(validating_scopes)
-        ((scopes & validating_scopes).try(:size) || 0)  > 0
+        ((scopes & validating_scopes)&.size || 0)  > 0
+      end
+
+      def users
+        @user_client ||= Gatekeeper::Client::User.new(access_token)
       end
 
       private
